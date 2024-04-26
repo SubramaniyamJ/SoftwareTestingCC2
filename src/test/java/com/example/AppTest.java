@@ -52,17 +52,18 @@ public class AppTest
 
     @Test
     public void TestCase2() throws Exception{
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         Actions action = new Actions(driver);
         action.moveToElement(driver.findElement(By.linkText("Audiobooks"))).perform();
         driver.findElement(By.linkText("Audiobooks Top 100")).click();
         js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0, 100)");
-        driver.findElement(By.xpath("//*[@id=\'addToBagForm_2940159543998\']/input[11]")).click();
-        Thread.sleep(8000);
-        String msg = driver.switchTo().activeElement().findElement(By.xpath("//*[@id=\"add-to-bag-main\"]/div[1]")).getText();
-
-        assertEquals(msg, "Item Successfully Added To Your Cart");  
-
+        driver.findElement(By.linkText("Funny Story")).click();
+        js.executeScript("window.scrollBy(0, 300)");
+        driver.findElement(By.xpath("//*[@id='commerce-zone']/div[2]/ul/li[2]/div/div/label/span")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"find-radio-checked\"]/div[1]/form/input[5]"))).click();
+        String msg = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"dialog-title\"]/em/div"))).getText();
+        assertEquals(msg, "Item Successfully Added To Your Cart"); 
     }
 
     @Test
@@ -74,7 +75,7 @@ public class AppTest
         driver.findElement(By.linkText("B&N Membership")).click();
         js.executeScript("window.scrollBy(0, 2000)");
         driver.findElement(By.linkText("JOIN REWARDS")).click();
-        driver.switchTo().frame(By.xpath("/html"));
+        String msg = driver.switchTo().frame(driver.findElement(By.xpath("/html/body/div[7]/div/iframe"))).findElement(By.xpath("//*[@id=\"dialog-title\"]")).getText();
         assertEquals(msg, "Sign in or Create an Account");
     }
 
