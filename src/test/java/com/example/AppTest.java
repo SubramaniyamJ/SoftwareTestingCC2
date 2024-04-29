@@ -47,6 +47,7 @@ public class AppTest
 
     @BeforeTest
     public void setting() throws Exception{
+        driver = new ChromeDriver();
         reports = new ExtentReports();
         xReporter = new ExtentSparkReporter("C:\\Users\\Subramaniyam J\\Desktop\\demo\\src\\resources\\ExtentReport.html");
         reports.attachReporter(xReporter);
@@ -55,14 +56,13 @@ public class AppTest
     }
     @BeforeMethod
     public void setup() throws Exception{
-        driver = new ChromeDriver();
         log.info("URL is opening!!");
         driver.get("https://www.barnesandnoble.com/");
         log.info("URL opened Successfully!!");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
     }
 
-    @Test
+    @Test(priority = 1)
     public void TestCase1() throws Exception{
         FileInputStream fis = new FileInputStream("D:\\Software Testing\\credentails.xlsx");
         test = reports.createTest("Testcase 1 started...");
@@ -72,12 +72,18 @@ public class AppTest
         driver.findElement(By.xpath("//*[@id='rhf_header_element']/nav/div/div[3]/form/div/div[2]/div/input[1]")).sendKeys(author);
         driver.findElement(By.xpath("//*[@id='rhf_header_element']/nav/div/div[3]/form/div/span/button")).click();
         boolean msg = driver.getPageSource().contains("Chetan Bhagat");
-        if(msg) test.log(Status.PASS, "testcase 1 verfied successfully");
-        else test.log(Status.FAIL, "testcase 1 is unsuccessful");
+        if(msg){
+             test.log(Status.PASS, "testcase 1 verfied successfully");
+             log.info("testcase 1 passed successfully, chentan bhagat text is present");
+            }
+            else{
+                test.log(Status.FAIL, "testcase 1 is unsuccessful");
+                log.error("testcase 1 is unsuccessful, chentan bhagat text is not present");
+            }
         assertTrue(msg);
     }
     
-    @Test
+    @Test(priority = 2)
     public void TestCase2() throws Exception{
         test = reports.createTest("Testcase 2 started...");
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -99,10 +105,12 @@ public class AppTest
             test.log(Status.FAIL, "testcase 2 is unsuccessful");
             log.error("testcase 2 is unsuccessful");
         }
+
+        log.info("testcase2 execution finished");
         assertEquals(msg, "Item Successfully Added To Your Cart");
     }
-
-    @Test
+    
+    @Test(priority = 3)
     public void TestCase3() throws Exception{
         test = reports.createTest("Testcase3 started...");
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -114,24 +122,24 @@ public class AppTest
         driver.findElement(By.linkText("JOIN REWARDS")).click();
         String msg = driver.switchTo().frame(driver.findElement(By.xpath("/html/body/div[7]/div/iframe"))).findElement(By.xpath("//*[@id=\"dialog-title\"]")).getText();
 
-        if(msg.equals("Sign in or Create an Account"))
+        if(msg.equals("Sign in or Create an Account")){
+            log.info("testcase 3 passed, \"signin or signup text is present\" ");
             test.log(Status.PASS, "test case 3 is verified successfully");
-        else
-            test.log(Status.FAIL, "test case 3 is unsuccessful");
-
-        log.info("testcase 3 execution finished successfully");
-
+        }
+        else{
+            test.log(Status.FAIL, "test case 3 is unsuccessful, \"signin or signup text is not present\" ");
+            log.error("testcase 2 is unsuccessful");
+        }
+    
+        log.info("testcase 3 execution finished");
+        
         assertEquals(msg, "Sign in or Create an Account");
-    }
-
-    @AfterMethod
-    public void setdown() throws Exception{
-        driver.close();
     }
 
     @AfterTest
     public void setted(){
+        driver.close();
         reports.flush();
-    }
+        }
 
- } 
+} 
